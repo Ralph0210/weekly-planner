@@ -230,8 +230,8 @@ body {
   color: var(--text-secondary);
   margin-top: var(--space-xs);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-word;
@@ -311,6 +311,17 @@ body {
 
 .subtask-item:hover .subtask-remove {
   opacity: 1;
+}
+
+.subtask-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.subtask-item.completed .subtask-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
 }
 
 /* Buttons */
@@ -501,6 +512,21 @@ body {
   height: 18px;
 }
 
+.panel-action-btn.active {
+  color: var(--accent-primary);
+  background: var(--bg-muted);
+}
+
+.panel-action-btn .comment-badge {
+  font-size: 10px;
+  font-weight: 600;
+  background: var(--accent-primary);
+  color: white;
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 4px;
+}
+
 .panel-content {
   flex: 1;
   overflow-y: auto;
@@ -509,6 +535,12 @@ body {
 
 .panel-document {
   max-width: 560px;
+  width: 100%;
+  margin: 0 auto; /* Suggest centering for better look, or just keep left if that's current */
+}
+
+.panel-document.with-sidebar {
+  max-width: 100%;
 }
 
 .panel-title {
@@ -572,14 +604,20 @@ body {
 
 .panel-subtask {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+  flex-direction: column;
+  gap: var(--space-xs);
   padding: var(--space-sm) 0;
   border-bottom: 1px solid var(--border-light);
 }
 
 .panel-subtask:last-of-type {
   border-bottom: none;
+}
+
+.panel-subtask-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
 .panel-subtask-checkbox {
@@ -658,6 +696,36 @@ body {
 .panel-subtask-remove svg {
   width: 14px;
   height: 14px;
+}
+
+.panel-subtask-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  border: none;
+  background: var(--bg-muted);
+  padding: var(--space-sm);
+  margin-left: calc(18px + var(--space-sm));
+  width: calc(100% - 18px - var(--space-sm));
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-family: inherit;
+  resize: none;
+  line-height: 1.6;
+  min-height: 36px;
+  overflow: hidden;
+}
+
+.panel-subtask-description::placeholder {
+  color: var(--text-muted);
+}
+
+.panel-subtask-description:focus {
+  outline: none;
+}
+
+.panel-subtask.completed .panel-subtask-description {
+  text-decoration: line-through;
+  color: var(--text-muted);
 }
 
 .panel-add-subtask {

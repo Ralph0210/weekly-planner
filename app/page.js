@@ -282,7 +282,17 @@ function TaskCard({
         </div>
         <div className="task-content">
           <div className="task-title">{task.title}</div>
-          {task.details && <div className="task-details">{task.details}</div>}
+          {task.details && (
+            <div
+              className="task-details"
+              dangerouslySetInnerHTML={{
+                __html: task.details
+                  .replace(/<[^>]*>/g, " ")
+                  .replace(/\s+/g, " ")
+                  .trim(),
+              }}
+            />
+          )}
         </div>
         <div className="task-actions">
           <button
