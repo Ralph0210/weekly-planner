@@ -3,17 +3,12 @@
 import { useState, useEffect, useRef } from "react"
 import { Icons } from "./Icons"
 import RichTextEditor from "./RichTextEditor"
-import {
-  SimpleListSection,
-  TimelineSection,
-  ProcessDeckSection,
-  SectionSelector,
-} from "./TaskSections"
+import { BlockEditor } from "./BlockEditor"
 
 export default function TaskPanel({ isOpen, onClose, onSave, task }) {
   const [title, setTitle] = useState("")
   const [details, setDetails] = useState("")
-  const [sections, setSections] = useState([])
+  const [blocks, setBlocks] = useState([])
   const [comments, setComments] = useState([])
   const [isExpanded, setIsExpanded] = useState(false)
   const [showCommentsSidebar, setShowCommentsSidebar] = useState(false)
@@ -25,26 +20,62 @@ export default function TaskPanel({ isOpen, onClose, onSave, task }) {
       setDetails(task.details || "")
       setComments(task.comments || [])
 
-      // Initialize Sections
-      if (task.sections && task.sections.length > 0) {
-        setSections(task.sections)
+      // Initialize Blocks from existing data
+      if (task.blocks && task.blocks.length > 0) {
+        // New format: use blocks directly
+        setBlocks(task.blocks)
+      } else if (task.sections && task.sections.length > 0) {
+        // Migration from sections: convert section items to blocks
+        const migratedBlocks = task.sections.flatMap((section) => {
+          if (section.type === "simple-list") {
+            return section.items.map((item) => ({
+              id: item.id || crypto.randomUUID(),
+              type: "subtask",
+              content: item.text || "",
+              completed: item.completed || false,
+              children: [],
+            }))
+          }
+          if (section.type === "timeline") {
+            return section.items.map((item) => ({
+              id: item.id || crypto.randomUUID(),
+              type: "timeline",
+              content: item.text || "",
+              description: item.description || "",
+              completed: item.completed || false,
+              children: [],
+            }))
+          }
+          if (section.type === "process-deck") {
+            return section.items.map((item) => ({
+              id: item.id || crypto.randomUUID(),
+              type: "process-deck",
+              content: item.text || "",
+              description: item.description || "",
+              completed: false,
+              children: [],
+            }))
+          }
+          return []
+        })
+        setBlocks(migratedBlocks)
       } else if (task.subtasks && task.subtasks.length > 0) {
-        // Migration: Wrap existing subtasks in a Default Section
-        setSections([
-          {
-            id: crypto.randomUUID(),
-            type: "simple-list",
-            title: "Subtasks",
-            items: task.subtasks,
-          },
-        ])
+        // Migration from legacy subtasks
+        const migratedBlocks = task.subtasks.map((item) => ({
+          id: item.id || crypto.randomUUID(),
+          type: "subtask",
+          content: item.text || "",
+          completed: item.completed || false,
+          children: [],
+        }))
+        setBlocks(migratedBlocks)
       } else {
-        setSections([])
+        setBlocks([])
       }
     } else {
       setTitle("")
       setDetails("")
-      setSections([])
+      setBlocks([])
       setComments([])
     }
   }, [task, isOpen])
@@ -60,47 +91,70 @@ export default function TaskPanel({ isOpen, onClose, onSave, task }) {
   const handleSave = () => {
     if (!title.trim()) return
 
-    // Backward Compatibility: Flatten all section items into `subtasks`
-    // This ensures progress bars on cards still work without refactoring the whole app.
-    const allSubtasks = sections.flatMap((section) => section.items)
+    // Flatten blocks to subtasks for backward compatibility (progress bars on cards)
+    const flattenBlocks = (blockList) => {
+      return blockList.flatMap((block) => {
+        // Subtask or text block
+        if (block.type === "subtask" || block.type === "text") {
+          return [
+            {
+              id: block.id,
+              text: block.content,
+              completed: block.completed || false,
+            },
+          ]
+        }
+
+        // Timeline block: each step becomes a subtask, plus their nested subtasks
+        if (block.type === "timeline" && block.data?.steps) {
+          return block.data.steps.flatMap((step) => {
+            const stepItem = {
+              id: step.id,
+              text: step.title,
+              completed: step.completed || false,
+            }
+            const nestedItems = (step.subtasks || []).map((sub) => ({
+              id: sub.id,
+              text: sub.text,
+              completed: sub.completed || false,
+            }))
+            return [stepItem, ...nestedItems]
+          })
+        }
+
+        // Process deck block: each card becomes a subtask, plus their nested subtasks
+        if (block.type === "process-deck" && block.data?.cards) {
+          return block.data.cards.flatMap((card) => {
+            const cardItem = {
+              id: card.id,
+              text: card.title,
+              completed: false,
+            }
+            const nestedItems = (card.subtasks || []).map((sub) => ({
+              id: sub.id,
+              text: sub.text,
+              completed: sub.completed || false,
+            }))
+            return [cardItem, ...nestedItems]
+          })
+        }
+
+        return []
+      })
+    }
+
+    const allSubtasks = flattenBlocks(blocks)
 
     onSave({
       id: task?.id || crypto.randomUUID(),
       title: title.trim(),
       details: details.trim(),
-      sections, // Save the structural data
-      subtasks: allSubtasks, // Save flattened list for legacy compatibility
+      blocks, // Save the new block structure
+      subtasks: allSubtasks, // Flattened for legacy compatibility
       comments,
       completed: task?.completed || false,
     })
     onClose()
-  }
-
-  // --- Section Management ---
-
-  const addSection = (type) => {
-    const newSection = {
-      id: crypto.randomUUID(),
-      type,
-      title:
-        type === "timeline"
-          ? "Timeline"
-          : type === "process-deck"
-            ? "Process Deck"
-            : "Subtasks",
-      items: [],
-    }
-    setSections([...sections, newSection])
-  }
-
-  const removeSection = (id) => {
-    setSections(sections.filter((s) => s.id !== id))
-  }
-
-  const updateSectionItems = (id, newItems) => {
-    setSections(
-      sections.map((s) => (s.id === id ? { ...s, items: newItems } : s)),
-    )
   }
 
   return (
@@ -169,48 +223,8 @@ export default function TaskPanel({ isOpen, onClose, onSave, task }) {
               onToggleSidebar={setShowCommentsSidebar}
             />
 
-            <div className="sections-container">
-              {sections.map((section) => {
-                if (section.type === "simple-list") {
-                  return (
-                    <SimpleListSection
-                      key={section.id}
-                      items={section.items}
-                      onUpdate={(items) =>
-                        updateSectionItems(section.id, items)
-                      }
-                      onRemoveSection={() => removeSection(section.id)}
-                    />
-                  )
-                }
-                if (section.type === "timeline") {
-                  return (
-                    <TimelineSection
-                      key={section.id}
-                      items={section.items}
-                      onUpdate={(items) =>
-                        updateSectionItems(section.id, items)
-                      }
-                      onRemoveSection={() => removeSection(section.id)}
-                    />
-                  )
-                }
-                if (section.type === "process-deck") {
-                  return (
-                    <ProcessDeckSection
-                      key={section.id}
-                      items={section.items}
-                      onUpdate={(items) =>
-                        updateSectionItems(section.id, items)
-                      }
-                      onRemoveSection={() => removeSection(section.id)}
-                    />
-                  )
-                }
-                return null
-              })}
-
-              <SectionSelector onSelect={addSection} />
+            <div className="blocks-container">
+              <BlockEditor blocks={blocks} onChange={setBlocks} />
             </div>
           </div>
         </div>
@@ -228,6 +242,12 @@ export default function TaskPanel({ isOpen, onClose, onSave, task }) {
           </button>
         </div>
       </div>
+
+      <style jsx>{`
+        .blocks-container {
+          margin-top: var(--space-md);
+        }
+      `}</style>
     </>
   )
 }

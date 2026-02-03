@@ -137,6 +137,8 @@ export const Icons = {
   ),
   ChevronUp: () => (
     <svg
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -149,6 +151,8 @@ export const Icons = {
   ),
   ChevronDown: () => (
     <svg
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

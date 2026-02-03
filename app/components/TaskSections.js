@@ -85,99 +85,149 @@ export function SimpleListSection({ items, onUpdate, onRemoveSection }) {
       </div>
       <style jsx>{`
         .section-container {
-          margin-bottom: 24px;
+          margin-bottom: var(--space-lg);
         }
         .section-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 8px;
+          margin-bottom: var(--space-sm);
+          padding: var(--space-xs);
+          border-radius: var(--radius-sm);
+          transition: background var(--transition-fast);
+        }
+        .section-header:hover {
+          background: var(--bg-hover);
         }
         .section-title {
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--text-secondary);
+          font-size: var(--font-size-sm);
+          font-weight: 500;
+          color: var(--text-muted);
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
         .section-remove-btn {
-          opacity: 0;
-          transition: opacity 0.2s;
           background: none;
           border: none;
           cursor: pointer;
           color: var(--text-tertiary);
+          padding: var(--space-xs);
+          border-radius: var(--radius-sm);
+          display: flex;
+          align-items: center;
+          transition: all var(--transition-fast);
         }
-        .section-container:hover .section-remove-btn {
-          opacity: 1;
+        .section-remove-btn:hover {
+          color: var(--danger);
+          background: var(--danger-light);
+        }
+        .section-remove-btn svg {
+          width: 14px;
+          height: 14px;
         }
 
         .simple-item {
-          margin-bottom: 8px;
+          margin-bottom: var(--space-xs);
         }
         .simple-item-row {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--space-sm);
+          padding: var(--space-xs);
+          border-radius: var(--radius-sm);
+          transition: background var(--transition-fast);
+        }
+        .simple-item-row:hover {
+          background: var(--bg-hover);
         }
         .simple-item.completed .simple-input {
           text-decoration: line-through;
-          color: var(--text-tertiary);
+          color: var(--text-muted);
         }
 
         .checkbox {
           width: 18px;
           height: 18px;
-          border: 1.5px solid var(--border-color);
+          border: 2px solid var(--border-color);
           border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: all var(--transition-fast);
+          flex-shrink: 0;
+        }
+        .checkbox:hover {
+          border-color: var(--success);
+          background: var(--success-light);
         }
         .checkbox.checked {
-          background: var(--accent-primary);
-          border-color: var(--accent-primary);
+          background: var(--success);
+          border-color: var(--success);
           color: white;
+        }
+        .checkbox svg {
+          width: 12px;
+          height: 12px;
         }
 
         .simple-input {
           flex: 1;
           border: none;
           background: transparent;
-          font-size: 14px;
+          font-size: var(--font-size-md);
           color: var(--text-primary);
           outline: none;
-          padding: 4px 0;
+          padding: var(--space-xs) 0;
+          font-family: inherit;
         }
+        .simple-input:focus {
+          outline: none;
+        }
+        .simple-input::placeholder {
+          color: var(--text-muted);
+        }
+
         .item-remove-btn {
           background: none;
           border: none;
           color: var(--text-tertiary);
           cursor: pointer;
-          opacity: 0;
-          padding: 4px;
+          padding: var(--space-xs);
           display: flex;
+          align-items: center;
+          border-radius: var(--radius-sm);
+          transition: all var(--transition-fast);
         }
-        .simple-item:hover .item-remove-btn {
-          opacity: 1;
+        .item-remove-btn:hover {
+          color: var(--danger);
+          background: var(--danger-light);
+        }
+        .item-remove-btn svg {
+          width: 14px;
+          height: 14px;
         }
 
         .add-item-btn {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: var(--space-sm);
           color: var(--text-secondary);
-          font-size: 13px;
+          font-size: var(--font-size-sm);
           background: none;
           border: none;
           cursor: pointer;
-          padding: 4px 0;
-          transition: color 0.2s;
+          padding: var(--space-sm) var(--space-xs);
+          border-radius: var(--radius-sm);
+          transition: all var(--transition-fast);
         }
         .add-item-btn:hover {
           color: var(--accent-primary);
+          background: var(--accent-light);
+        }
+        .add-item-btn svg {
+          width: 14px;
+          height: 14px;
         }
       `}</style>
     </div>
@@ -292,36 +342,60 @@ export function TimelineSection({ items, onUpdate, onRemoveSection }) {
       </div>
       <style jsx>{`
         .section-container {
-          margin-bottom: 24px;
+          margin-bottom: var(--space-lg);
           position: relative;
         }
         .section-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 12px;
+          margin-bottom: var(--space-md);
+          padding: var(--space-xs);
+          border-radius: var(--radius-sm);
+          transition: background var(--transition-fast);
+        }
+        .section-header:hover {
+          background: var(--bg-hover);
         }
         .section-title {
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--text-secondary);
+          font-size: var(--font-size-sm);
+          font-weight: 500;
+          color: var(--text-muted);
           text-transform: uppercase;
           letter-spacing: 0.5px;
+        }
+        .section-remove-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--text-tertiary);
+          padding: var(--space-xs);
+          border-radius: var(--radius-sm);
+          display: flex;
+          align-items: center;
+          transition: all var(--transition-fast);
+        }
+        .section-remove-btn:hover {
+          color: var(--danger);
+          background: var(--danger-light);
+        }
+        .section-remove-btn svg {
+          width: 14px;
+          height: 14px;
         }
 
         .timeline-content {
           position: relative;
-          padding-left: 10px;
+          padding-left: var(--space-sm);
         }
 
         .timeline-node {
           display: flex;
-          gap: 12px;
+          gap: var(--space-md);
           position: relative;
-          margin-bottom: 16px;
+          margin-bottom: var(--space-md);
           align-items: flex-start;
-          opacity: 1;
-          transition: opacity 0.2s;
+          transition: opacity var(--transition-fast);
         }
         .timeline-node.dragging {
           opacity: 0.5;
@@ -341,43 +415,52 @@ export function TimelineSection({ items, onUpdate, onRemoveSection }) {
         }
 
         .node-circle {
-          width: 30px;
-          height: 30px;
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
           background: var(--bg-secondary);
           border: 2px solid var(--border-color);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 12px;
-          font-weight: 700;
+          font-size: var(--font-size-xs);
+          font-weight: 600;
           color: var(--text-secondary);
           z-index: 1;
           position: relative;
           cursor: pointer;
           flex-shrink: 0;
           margin-top: 2px;
+          transition: all var(--transition-fast);
+        }
+        .node-circle:hover {
+          border-color: var(--success);
+          background: var(--success-light);
         }
         .node-circle.checked {
-          background: var(--accent-primary);
-          border-color: var(--accent-primary);
+          background: var(--success);
+          border-color: var(--success);
           color: white;
         }
         .node-circle svg {
-          width: 14px;
-          height: 14px;
+          width: 12px;
+          height: 12px;
         }
 
         .node-content {
           flex: 1;
           background: var(--bg-card);
           border: 1px solid var(--border-color);
-          border-radius: 8px;
-          padding: 10px 12px;
-          transition: border-color 0.2s;
+          border-radius: var(--radius-sm);
+          padding: var(--space-sm) var(--space-md);
+          transition: all var(--transition-fast);
+        }
+        .node-content:hover {
+          background: var(--bg-muted);
         }
         .timeline-node:focus-within .node-content {
           border-color: var(--accent-primary);
+          box-shadow: 0 0 0 2px var(--accent-primary-dim);
         }
         .timeline-node.completed .node-content {
           opacity: 0.6;
@@ -387,55 +470,78 @@ export function TimelineSection({ items, onUpdate, onRemoveSection }) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 4px;
+          margin-bottom: var(--space-xs);
         }
         .node-title {
           border: none;
           background: transparent;
-          font-weight: 600;
-          font-size: 14px;
+          font-weight: 500;
+          font-size: var(--font-size-md);
           color: var(--text-primary);
           width: 100%;
           outline: none;
+          font-family: inherit;
+        }
+        .node-title::placeholder {
+          color: var(--text-muted);
         }
 
         .node-desc {
           border: none;
           background: transparent;
-          font-size: 13px;
+          font-size: var(--font-size-sm);
           color: var(--text-secondary);
           width: 100%;
           outline: none;
+          font-family: inherit;
+        }
+        .node-desc::placeholder {
+          color: var(--text-muted);
         }
 
         .node-delete {
-          opacity: 0;
-          position: absolute;
-          right: -28px;
-          top: 10px;
+          position: relative;
+          margin-left: var(--space-xs);
           background: none;
           border: none;
           color: var(--text-tertiary);
           cursor: pointer;
+          padding: var(--space-xs);
+          border-radius: var(--radius-sm);
+          display: flex;
+          align-items: center;
+          transition: all var(--transition-fast);
         }
-        .timeline-node:hover .node-delete {
-          opacity: 1;
+        .node-delete:hover {
+          color: var(--danger);
+          background: var(--danger-light);
+        }
+        .node-delete svg {
+          width: 14px;
+          height: 14px;
         }
 
         .add-item-btn {
-          margin-left: 42px;
+          margin-left: calc(28px + var(--space-md));
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: var(--space-sm);
           color: var(--text-secondary);
-          font-size: 13px;
+          font-size: var(--font-size-sm);
           background: none;
           border: none;
           cursor: pointer;
-          padding: 4px 0;
+          padding: var(--space-sm) var(--space-xs);
+          border-radius: var(--radius-sm);
+          transition: all var(--transition-fast);
         }
         .add-item-btn:hover {
           color: var(--accent-primary);
+          background: var(--accent-light);
+        }
+        .add-item-btn svg {
+          width: 14px;
+          height: 14px;
         }
       `}</style>
     </div>
@@ -530,47 +636,79 @@ export function ProcessDeckSection({ items, onUpdate, onRemoveSection }) {
       </div>
       <style jsx>{`
         .section-container {
-          margin-bottom: 24px;
+          margin-bottom: var(--space-lg);
         }
         .section-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 8px;
+          margin-bottom: var(--space-sm);
+          padding: var(--space-xs);
+          border-radius: var(--radius-sm);
+          transition: background var(--transition-fast);
+        }
+        .section-header:hover {
+          background: var(--bg-hover);
         }
         .section-title {
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--text-secondary);
+          font-size: var(--font-size-sm);
+          font-weight: 500;
+          color: var(--text-muted);
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
+        .section-remove-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--text-tertiary);
+          padding: var(--space-xs);
+          border-radius: var(--radius-sm);
+          display: flex;
+          align-items: center;
+          transition: all var(--transition-fast);
+        }
+        .section-remove-btn:hover {
+          color: var(--danger);
+          background: var(--danger-light);
+        }
+        .section-remove-btn svg {
+          width: 14px;
+          height: 14px;
+        }
 
         .deck-card {
-          background: rgba(255, 255, 255, 0.03);
+          background: var(--bg-card);
           border: 1px solid var(--border-color);
-          border-radius: 8px;
-          margin-bottom: 8px;
+          border-radius: var(--radius-sm);
+          margin-bottom: var(--space-sm);
           overflow: hidden;
-          transition: all 0.2s ease;
+          transition: all var(--transition-fast);
+        }
+        .deck-card:hover {
+          background: var(--bg-muted);
         }
         .deck-card.expanded {
-          background: rgba(255, 255, 255, 0.06);
+          background: var(--bg-card);
           border-color: var(--accent-primary-dim);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .card-header {
           display: flex;
           align-items: center;
-          padding: 12px;
+          padding: var(--space-sm) var(--space-md);
           cursor: pointer;
           user-select: none;
+          transition: background var(--transition-fast);
+        }
+        .card-header:hover {
+          background: var(--bg-hover);
         }
         .card-title-prefix {
-          font-size: 13px;
+          font-size: var(--font-size-sm);
           color: var(--text-tertiary);
-          margin-right: 8px;
+          margin-right: var(--space-sm);
           font-weight: 500;
         }
         .card-title-input {
@@ -579,62 +717,87 @@ export function ProcessDeckSection({ items, onUpdate, onRemoveSection }) {
           border: none;
           color: var(--text-primary);
           font-weight: 500;
-          font-size: 14px;
+          font-size: var(--font-size-md);
           outline: none;
+          font-family: inherit;
+        }
+        .card-title-input::placeholder {
+          color: var(--text-muted);
         }
         .card-caret {
           color: var(--text-tertiary);
+          display: flex;
+          align-items: center;
+          transition: color var(--transition-fast);
+        }
+        .card-caret svg {
+          width: 16px;
+          height: 16px;
+        }
+        .deck-card:hover .card-caret {
+          color: var(--text-secondary);
         }
 
         .card-body {
-          padding: 0 12px 12px 12px;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 0 var(--space-md) var(--space-md) var(--space-md);
+          border-top: 1px solid var(--border-light);
         }
         .card-textarea {
           width: 100%;
           background: transparent;
           border: none;
           color: var(--text-secondary);
-          font-size: 14px;
-          line-height: 1.5;
+          font-size: var(--font-size-md);
+          line-height: 1.6;
           outline: none;
-          padding-top: 12px;
+          padding-top: var(--space-md);
           min-height: 80px;
           resize: none;
-          border-radius: 0;
+          font-family: inherit;
+        }
+        .card-textarea::placeholder {
+          color: var(--text-muted);
         }
 
         .card-footer {
           display: flex;
           justify-content: flex-end;
-          margin-top: 8px;
+          margin-top: var(--space-sm);
         }
         .card-delete-btn {
-          font-size: 12px;
-          color: #ef4444;
+          font-size: var(--font-size-xs);
+          color: var(--danger);
           background: none;
           border: none;
           cursor: pointer;
-          opacity: 0.7;
+          padding: var(--space-xs) var(--space-sm);
+          border-radius: var(--radius-sm);
+          transition: all var(--transition-fast);
         }
         .card-delete-btn:hover {
-          opacity: 1;
+          background: var(--danger-light);
         }
 
         .add-item-btn {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: var(--space-sm);
           color: var(--text-secondary);
-          font-size: 13px;
+          font-size: var(--font-size-sm);
           background: none;
           border: none;
           cursor: pointer;
-          padding: 4px 0;
-          margin-top: 4px;
+          padding: var(--space-sm) var(--space-xs);
+          border-radius: var(--radius-sm);
+          transition: all var(--transition-fast);
         }
         .add-item-btn:hover {
           color: var(--accent-primary);
+          background: var(--accent-light);
+        }
+        .add-item-btn svg {
+          width: 14px;
+          height: 14px;
         }
       `}</style>
     </div>
@@ -695,98 +858,109 @@ export function SectionSelector({ onSelect }) {
       )}
       <style jsx>{`
         .section-selector {
-          margin-top: 24px;
-          padding-top: 16px;
+          margin-top: var(--space-lg);
+          padding-top: var(--space-md);
           border-top: 1px dashed var(--border-color);
         }
         .add-section-btn {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--space-sm);
           width: 100%;
           justify-content: center;
-          padding: 10px;
+          padding: var(--space-sm) var(--space-md);
           border: 1px dashed var(--border-color);
-          border-radius: 8px;
+          border-radius: var(--radius-sm);
           color: var(--text-secondary);
           background: transparent;
           cursor: pointer;
-          transition: all 0.2s;
+          font-size: var(--font-size-sm);
+          transition: all var(--transition-fast);
         }
         .add-section-btn:hover {
           border-color: var(--accent-primary);
           color: var(--accent-primary);
-          background: rgba(255, 255, 255, 0.02);
+          background: var(--accent-light);
+        }
+        .add-section-btn svg {
+          width: 14px;
+          height: 14px;
         }
 
         .selector-menu {
           background: var(--bg-card);
           border: 1px solid var(--border-color);
-          border-radius: 8px;
-          padding: 8px;
-          animation: fadeIn 0.15s ease;
+          border-radius: var(--radius-sm);
+          padding: var(--space-sm);
+          animation: fadeIn var(--transition-fast);
         }
         .selector-title {
-          font-size: 12px;
-          font-weight: 600;
-          color: var(--text-tertiary);
-          margin-bottom: 8px;
-          padding-left: 8px;
+          font-size: var(--font-size-xs);
+          font-weight: 500;
+          color: var(--text-muted);
+          margin-bottom: var(--space-sm);
+          padding-left: var(--space-sm);
           text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .selector-item {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: var(--space-md);
           width: 100%;
-          padding: 8px;
+          padding: var(--space-sm);
           border: none;
           background: transparent;
           cursor: pointer;
-          border-radius: 6px;
+          border-radius: var(--radius-sm);
           text-align: left;
+          transition: background var(--transition-fast);
         }
         .selector-item:hover {
           background: var(--bg-hover);
         }
         .selector-item .icon {
           font-size: 18px;
+          width: 24px;
+          text-align: center;
         }
         .selector-item .name {
           display: block;
-          font-size: 14px;
+          font-size: var(--font-size-md);
           font-weight: 500;
           color: var(--text-primary);
         }
         .selector-item .desc {
           display: block;
-          font-size: 12px;
-          color: var(--text-tertiary);
+          font-size: var(--font-size-xs);
+          color: var(--text-muted);
+          margin-top: 2px;
         }
 
         .selector-cancel {
           width: 100%;
-          margin-top: 8px;
-          padding: 6px;
+          margin-top: var(--space-sm);
+          padding: var(--space-xs);
           background: none;
           border: none;
-          color: var(--text-tertiary);
-          font-size: 12px;
+          color: var(--text-muted);
+          font-size: var(--font-size-xs);
           cursor: pointer;
+          border-radius: var(--radius-sm);
+          transition: all var(--transition-fast);
         }
         .selector-cancel:hover {
           color: var(--text-secondary);
+          background: var(--bg-hover);
         }
 
         @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(4px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
           }
         }
       `}</style>
