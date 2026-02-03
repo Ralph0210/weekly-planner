@@ -135,6 +135,30 @@ export const Icons = {
       <line x1="3" y1="21" x2="10" y2="14" />
     </svg>
   ),
+  ChevronUp: () => (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+  ),
+  ChevronDown: () => (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  ),
 }
 
 export default Icons

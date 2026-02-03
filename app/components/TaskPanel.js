@@ -3,11 +3,17 @@
 import { useState, useEffect, useRef } from "react"
 import { Icons } from "./Icons"
 import RichTextEditor from "./RichTextEditor"
+import {
+  SimpleListSection,
+  TimelineSection,
+  ProcessDeckSection,
+  SectionSelector,
+} from "./TaskSections"
 
 export default function TaskPanel({ isOpen, onClose, onSave, task }) {
   const [title, setTitle] = useState("")
   const [details, setDetails] = useState("")
-  const [subtasks, setSubtasks] = useState([])
+  const [sections, setSections] = useState([])
   const [comments, setComments] = useState([])
   const [isExpanded, setIsExpanded] = useState(false)
   const [showCommentsSidebar, setShowCommentsSidebar] = useState(false)
@@ -17,97 +23,84 @@ export default function TaskPanel({ isOpen, onClose, onSave, task }) {
     if (task) {
       setTitle(task.title || "")
       setDetails(task.details || "")
-      setSubtasks(task.subtasks || [])
       setComments(task.comments || [])
+
+      // Initialize Sections
+      if (task.sections && task.sections.length > 0) {
+        setSections(task.sections)
+      } else if (task.subtasks && task.subtasks.length > 0) {
+        // Migration: Wrap existing subtasks in a Default Section
+        setSections([
+          {
+            id: crypto.randomUUID(),
+            type: "simple-list",
+            title: "Subtasks",
+            items: task.subtasks,
+          },
+        ])
+      } else {
+        setSections([])
+      }
     } else {
       setTitle("")
       setDetails("")
-      setSubtasks([])
+      setSections([])
       setComments([])
     }
   }, [task, isOpen])
 
   useEffect(() => {
     if (isOpen && titleRef.current) {
-      // Only focus if we're opening a new/empty task, or just always on open?
-      // User complaint was about focus being stolen WHILE typing subtask.
-      // So ensuring this only runs on mount/open is key.
       titleRef.current.focus()
     }
   }, [isOpen])
-
-  useEffect(() => {
-    // Auto-resize all subtask description textareas when subtasks change
-    if (isOpen) {
-      setTimeout(() => {
-        const textareas = document.querySelectorAll(
-          ".panel-subtask-description",
-        )
-        textareas.forEach((textarea) => {
-          textarea.style.height = "auto"
-          textarea.style.height = textarea.scrollHeight + "px"
-        })
-      }, 0)
-    }
-  }, [isOpen, subtasks])
 
   if (!isOpen) return null
 
   const handleSave = () => {
     if (!title.trim()) return
-    // Filter out empty subtasks (no text)
-    const validSubtasks = subtasks.filter((s) => s.text.trim())
+
+    // Backward Compatibility: Flatten all section items into `subtasks`
+    // This ensures progress bars on cards still work without refactoring the whole app.
+    const allSubtasks = sections.flatMap((section) => section.items)
+
     onSave({
       id: task?.id || crypto.randomUUID(),
       title: title.trim(),
       details: details.trim(),
-      subtasks: validSubtasks,
+      sections, // Save the structural data
+      subtasks: allSubtasks, // Save flattened list for legacy compatibility
       comments,
       completed: task?.completed || false,
     })
     onClose()
   }
 
-  const addSubtask = () => {
-    setSubtasks([
-      ...subtasks,
-      { id: crypto.randomUUID(), text: "", description: "", completed: false },
-    ])
-  }
+  // --- Section Management ---
 
-  const updateSubtask = (id, text) => {
-    setSubtasks(subtasks.map((s) => (s.id === id ? { ...s, text } : s)))
-  }
-
-  const updateSubtaskDescription = (id, description) => {
-    setSubtasks(subtasks.map((s) => (s.id === id ? { ...s, description } : s)))
-  }
-
-  const toggleSubtask = (id) => {
-    setSubtasks(
-      subtasks.map((s) =>
-        s.id === id ? { ...s, completed: !s.completed } : s,
-      ),
-    )
-  }
-
-  const removeSubtask = (id) => {
-    setSubtasks(subtasks.filter((s) => s.id !== id))
-  }
-
-  const handleSubtaskKeyDown = (e, id) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      addSubtask()
-    } else if (e.key === "Backspace" && e.target.value === "") {
-      e.preventDefault()
-      removeSubtask(id)
+  const addSection = (type) => {
+    const newSection = {
+      id: crypto.randomUUID(),
+      type,
+      title:
+        type === "timeline"
+          ? "Timeline"
+          : type === "process-deck"
+            ? "Process Deck"
+            : "Subtasks",
+      items: [],
     }
+    setSections([...sections, newSection])
   }
 
-  const autoResize = (e) => {
-    e.target.style.height = "auto"
-    e.target.style.height = e.target.scrollHeight + "px"
+  const removeSection = (id) => {
+    setSections(sections.filter((s) => s.id !== id))
+  }
+
+  const updateSectionItems = (id, newItems) => {
+    setSections(
+      sections.map((s) => (s.id === id ? { ...s, items: newItems } : s)),
+    )
   }
 
   return (
@@ -155,6 +148,7 @@ export default function TaskPanel({ isOpen, onClose, onSave, task }) {
         <div className="panel-content">
           <div
             className={`panel-document ${showCommentsSidebar ? "with-sidebar" : ""}`}
+            style={{ paddingBottom: "100px" }}
           >
             <input
               ref={titleRef}
@@ -175,60 +169,48 @@ export default function TaskPanel({ isOpen, onClose, onSave, task }) {
               onToggleSidebar={setShowCommentsSidebar}
             />
 
-            <div className="panel-section">
-              <div className="panel-section-header">
-                <span className="panel-section-title">Subtasks</span>
-              </div>
-
-              <div className="panel-subtasks">
-                {subtasks.map((subtask) => (
-                  <div
-                    key={subtask.id}
-                    className={`panel-subtask ${subtask.completed ? "completed" : ""}`}
-                  >
-                    <div className="panel-subtask-header">
-                      <div
-                        className={`panel-subtask-checkbox ${subtask.completed ? "checked" : ""}`}
-                        onClick={() => toggleSubtask(subtask.id)}
-                      >
-                        {subtask.completed && <Icons.Check />}
-                      </div>
-                      <input
-                        type="text"
-                        className="panel-subtask-input"
-                        value={subtask.text}
-                        onChange={(e) =>
-                          updateSubtask(subtask.id, e.target.value)
-                        }
-                        onKeyDown={(e) => handleSubtaskKeyDown(e, subtask.id)}
-                        placeholder="Subtask..."
-                      />
-                      <button
-                        className="panel-subtask-remove"
-                        onClick={() => removeSubtask(subtask.id)}
-                      >
-                        <Icons.X />
-                      </button>
-                    </div>
-                    <textarea
-                      className="panel-subtask-description"
-                      value={subtask.description || ""}
-                      onChange={(e) => {
-                        updateSubtaskDescription(subtask.id, e.target.value)
-                        autoResize(e)
-                      }}
-                      onInput={autoResize}
-                      placeholder="Add description..."
-                      rows={1}
+            <div className="sections-container">
+              {sections.map((section) => {
+                if (section.type === "simple-list") {
+                  return (
+                    <SimpleListSection
+                      key={section.id}
+                      items={section.items}
+                      onUpdate={(items) =>
+                        updateSectionItems(section.id, items)
+                      }
+                      onRemoveSection={() => removeSection(section.id)}
                     />
-                  </div>
-                ))}
+                  )
+                }
+                if (section.type === "timeline") {
+                  return (
+                    <TimelineSection
+                      key={section.id}
+                      items={section.items}
+                      onUpdate={(items) =>
+                        updateSectionItems(section.id, items)
+                      }
+                      onRemoveSection={() => removeSection(section.id)}
+                    />
+                  )
+                }
+                if (section.type === "process-deck") {
+                  return (
+                    <ProcessDeckSection
+                      key={section.id}
+                      items={section.items}
+                      onUpdate={(items) =>
+                        updateSectionItems(section.id, items)
+                      }
+                      onRemoveSection={() => removeSection(section.id)}
+                    />
+                  )
+                }
+                return null
+              })}
 
-                <button className="panel-add-subtask" onClick={addSubtask}>
-                  <Icons.Plus />
-                  <span>Add subtask</span>
-                </button>
-              </div>
+              <SectionSelector onSelect={addSection} />
             </div>
           </div>
         </div>
